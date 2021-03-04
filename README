@@ -1,0 +1,37 @@
+ASIMIONESEI DANIEL 336CB
+Tema 1 APD
+In implementarea temei am plecat de la varianta secventiala.
+In functia main am citit datele de intrare  din cele 2 fisiere (Julia si Mandelbrot).
+Calculez dimensiunile fisierului/matricii rezultat pentru fiecare dintre cei doi algoritmi si
+aloc memoria necesara.Tot in functia main initializez doua bariere pe care le voi
+folosi in functia pe care o apeleaza thread-ul si in cele doua functii apelate de
+thr_func(run_mandelbrot si run_julia).
+Cu un for de la 0 la p(nr de thread-uri) imi creez p thread-uri care vor
+paraleliza executia celor doi algoritmi.Functia principala pe care o primeste ca
+argument fiecare thread este thr_func(), iar ea are ca argument id-ul thread-ului.
+In functia thr_func, impart calculul efectuat de functia run_julia la un numar de intervale
+egal cu nr. de thread-uri si apelez functia run_julia pe acele intervale.
+Dupa ce apelez functia run_julia, pun o bariera pentru a ma asigura ca multimea Julia
+este calculata in toatalitate in acel punct (adica fiecare thread si-a efectuat operatiile)
+pentru a putea scrie in fisierul de iesire rezultatul complet.Scrierea in fisier o fac
+doar o data pentru thread-ul cu id-ul P-1.Dupa scrierea in fisierul julia mai pun o bariera
+pentru a ma asigura ca niciun thread nu o ia inainte si ca scrierea se face inaintea oricarei
+operatii care are legatura cu Mandelbrot(bariera asta are rolul de a desparti cei doi algoritmi
+pentru a respecta ordinea lor, ceruta in enunt).Acelas lucru il fac si pentru functia run_mandelbrot.
+Cele doua functii vor primi ca argumente: o structura params specifica lor, matricea alocata
+dinamic in care va fi pus rezultatul, start-ul si sfarsitul primului for (pe care il
+paralelizez), height si id-ul thread-ului.Practic impart intervalul de la 0 la width in p intervale
+pe care le efectuiaza fiecare thread, cate unul fiecare.In aceste functii paralelizez si 
+ultimul for dupa height/2.
+Atat in functia run_mandelbrot cat si in run_julia, am modificat intervalul pe care itereaza
+primul for pentru a calcula rezultatul(interval care este specific fiecarui thread), cat si
+intervalul pe care intereaza ultimul for care transforma rezultatul din coordonate matematice
+in coordonate ecran.Practic for-ul care calculeaza rezultatul il paralelizez dupa width, iar
+for-ul care transforma rezultatul, il paralelizez dupa height/2.
+Intre aceste for-uri, am pus o bariera pentru a ma asigura ca nu fac transformarea din coordonate
+matematice in coordonate ecran, pana cand fiecare thread nu isi termina de calculat partea lui
+din rezultat, iar rezultatul sa fie complet cand il transform.Pentru primul for start si end, le
+calculez in thr_func(in functie de id thread, nr de thread-uri si width), iar pentru ultimul for,
+start si end il calculez in functia run_mandelbrot/ run_julia in functie de id thread, nr de
+threaduri si height/2(N).
+Dupa ce fac join pe toate threadurile eliberez memoria si distrug barierele.
